@@ -1,0 +1,99 @@
+package com.nt.service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.nt.dto.AddressDTO;
+import com.nt.dto.CustomerDTO;
+import com.nt.dto.FormInputDTO;
+import com.nt.dto.OrderDTO;
+import com.nt.dto.OrderItemsDTO;
+import com.nt.entity.Address;
+import com.nt.entity.Customer;
+import com.nt.entity.Order;
+import com.nt.entity.OrderItems;
+import com.nt.repo.OrderRepo;
+
+@Service
+public class AdminServiceImpl implements IAdminService {
+
+    @Autowired
+    private OrderRepo oRepo;
+
+    @Override
+    public List<OrderDTO> findAllOrders(FormInputDTO inputs) {
+        // Retrieve all orders and apply filters
+        List<Order> orders = oRepo.findAll();
+        List<OrderDTO> matchingOrders = orders.stream()
+                .filter(order -> matchesCriteria(order, inputs))
+                .map(this::mapToOrderDTO)
+                .collect(Collectors.toList());
+
+        return matchingOrders;
+    }
+
+    private boolean matchesCriteria(Order order, FormInputDTO inputs) {
+        // Filter by email
+        if (StringUtils.hasLength(inputs.getEmail()) && 
+            !inputs.getEmail().equals(order.getCustomer().getEmail())) {
+            return false;
+        }
+        // Filter by order tracking ID
+        if (StringUtils.hasLength(inputs.getOrderTrackingId()) && 
+            !inputs.getOrderTrackingId().equals(order.getOrderTrackingId())) {
+            return false;
+        }
+        // Filter by delivery date
+        if (StringUtils.hasLength(inputs.getDeliveryDate())) {
+            try {
+                LocalDate deliveryDate = LocalDate.parse(inputs.getDeliveryDate());
+                if (!deliveryDate.equals(order.getDeliveryDate())) {
+                    return false;
+                }
+            } catch (Exception e) {
+                return false; // Handle invalid date format
+            }
+        }
+        return true;
+    }
+
+    private OrderDTO mapToOrderDTO(Order order) {
+        // Map order to OrderDTO
+        OrderDTO orderDTO = new OrderDTO();
+        BeanUtils.copyProperties(order, orderDTO);
+
+        // Map Customer to CustomerDTO
+        Optional.ofNullable(order.getCustomer()).ifPresent(customer -> {
+            CustomerDTO customerDTO = new CustomerDTO();
+            BeanUtils.copyProperties(customer, customerDTO);
+            orderDTO.setCustomer(customerDTO);
+        });
+
+        // Map Address to AddressDTO
+        Optional.ofNullable(order.getAddress()).ifPresent(address -> {
+            AddressDTO addressDTO = new AddressDTO();
+            BeanUtils.copyProperties(address, addressDTO);
+            orderDTO.setAddress(addressDTO);
+        });
+
+        // Map OrderItems to OrderItemsDTO set
+        Set<OrderItemsDTO> orderItemsDTO = order.getOrderItems().stream().map(item -> {
+            OrderItemsDTO itemDTO = new OrderItemsDTO();
+            BeanUtils.copyProperties(item, itemDTO);
+            return itemDTO;
+        }).collect(Collectors.toSet());
+
+        orderDTO.setOrderItems(orderItemsDTO);
+
+        return orderDTO;
+    }
+}

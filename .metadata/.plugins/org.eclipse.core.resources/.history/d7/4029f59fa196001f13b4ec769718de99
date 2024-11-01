@@ -1,0 +1,97 @@
+package com.nt.service;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.nt.dto.AddressDTO;
+import com.nt.dto.CustomerDTO;
+import com.nt.dto.FormInputDTO;
+import com.nt.dto.OrderDTO;
+import com.nt.dto.OrderItemsDTO;
+import com.nt.entity.Customer;
+import com.nt.entity.Order;
+import com.nt.entity.OrderItems;
+import com.nt.repo.OrderItemsRepo;
+import com.nt.repo.OrderRepo;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+@Service
+public class AdminServiceImpl implements IAdminService {
+
+    @Autowired
+    private OrderRepo orderRepo;
+    
+    @Autowired
+    private OrderItemsRepo itemRepo;
+
+    @Override
+    public List<OrderDTO> findAllOrders(FormInputDTO inputs) {
+        // Create an example Order object for filtering
+        Order orderExample = new Order();
+
+        // Set properties for the example object based on inputs
+        if (StringUtils.hasLength(inputs.getEmail())) {
+        	Customer cus = new Customer();
+        	cus.setEmail(inputs.getEmail());
+            orderExample.setCustomer(cus); // Adjust if you have a specific field in Order
+        }
+        if (StringUtils.hasLength(inputs.getOrderTrackingId())) {
+            orderExample.setOrderTrackingId(inputs.getOrderTrackingId());
+        }
+        // Add additional fields as necessary...
+
+        // Create an Example object
+        Example<Order> example = Example.of(orderExample);
+
+        // Retrieve matching orders
+        List<Order> orders = orderRepo.findAll(example);
+
+        // Convert orders to DTOs
+        List<OrderDTO> orderDTOs = new ArrayList<>();
+        for (Order order : orders) {
+            OrderDTO orderDTO = mapToOrderDTO(order);
+            orderDTOs.add(orderDTO);
+        }
+        
+        return orderDTOs;
+    }
+
+    private OrderDTO mapToOrderDTO(Order order) {
+        OrderDTO orderDTO = new OrderDTO();
+        BeanUtils.copyProperties(order, orderDTO);
+
+        // Map Customer to CustomerDTO
+        Optional.ofNullable(order.getCustomer()).ifPresent(customer -> {
+            CustomerDTO customerDTO = new CustomerDTO();
+            BeanUtils.copyProperties(customer, customerDTO);
+            orderDTO.setCustomer(customerDTO);
+        });
+
+        // Map Address to AddressDTO
+        Optional.ofNullable(order.getAddress()).ifPresent(address -> {
+            AddressDTO addressDTO = new AddressDTO();
+            BeanUtils.copyProperties(address, addressDTO);
+            orderDTO.setAddress(addressDTO);
+        });
+
+        // Map OrderItems
+        Set<OrderItemsDTO> itemsDTOSet = new HashSet<>();
+       List<OrderItems> items = itemRepo.findByOrderId(order.getId());
+       for(OrderItems item:items) {
+    	   OrderItemsDTO odto = new OrderItemsDTO();
+    	   BeanUtils.copyProperties(item, odto);
+    	   itemsDTOSet.add(odto);
+       }
+        orderDTO.setOrderItems(itemsDTOSet);
+
+        return orderDTO;
+    }
+}

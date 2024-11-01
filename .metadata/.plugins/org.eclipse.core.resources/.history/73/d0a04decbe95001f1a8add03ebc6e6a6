@@ -1,0 +1,12 @@
+package com.nt.service;
+
+import org.springframework.data.domain.jaxb.SpringDataJaxb.OrderDto;
+
+import com.nt.dto.OrderDTO;
+
+public interface IOrderService {
+	public String saveOrder(OrderDTO order);
+	public OrderDTO getOrderById(Long id);
+	public OrderDto getOrderByUser(String email);
+//	public 
+}

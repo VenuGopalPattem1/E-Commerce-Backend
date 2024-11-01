@@ -1,0 +1,12 @@
+package com.nt.service;
+
+import java.util.List;
+
+import com.nt.dto.OrderDTO;
+
+public interface IOrderService {
+	public String saveOrder(OrderDTO order);
+	public OrderDTO getOrderById(Long id);
+	public List<OrderDTO> getOrderByUser(String email);
+//	public 
+}

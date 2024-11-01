@@ -1,0 +1,47 @@
+package com.nt.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.nt.dto.FormInputDTO;
+import com.nt.entity.Customer;
+import com.nt.entity.Order;
+import com.nt.repo.OrderRepo;
+
+@Service
+public class AdminServiceImpl implements IAdminService {
+
+    @Autowired
+    private OrderRepo orderRepo;
+
+    @Override
+    public List<Order> findAllOrders(FormInputDTO inputs) {
+        // Create an example Order object for filtering
+        Order orderExample = new Order();
+
+        // Set properties for the example object based on inputs
+        if (StringUtils.hasLength(inputs.getEmail())) {
+        	Customer cus = new Customer();
+        	cus.setEmail(inputs.getEmail());
+            orderExample.setCustomer(cus); // Adjust if you have a specific field in Order
+        }
+        if (StringUtils.hasLength(inputs.getOrderTrackingId())) {
+            orderExample.setOrderTrackingId(inputs.getOrderTrackingId());
+        }
+        // Add additional fields as necessary...
+
+        // Create an Example object
+        Example<Order> example = Example.of(orderExample);
+
+        // Retrieve matching orders
+        List<Order> orders = orderRepo.findAll(example);
+
+      
+
+        return orders;
+    }
+}

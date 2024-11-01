@@ -1,0 +1,23 @@
+package com.nt.filter;
+
+import org.springframework.cloud.gateway.route.RouteLocator;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class GatewayConfig {
+
+    @Bean
+    public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
+        return builder.routes()
+            .route("auth-service", r -> r.path("/auth/**")
+                .filters(f -> f
+                    .addResponseHeader("Access-Control-Allow-Origin", "http://localhost:3000")
+                    .addResponseHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+                    .addResponseHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, x-requested-with, Accept, Origin")
+                    .addResponseHeader("Access-Control-Allow-Credentials", "true"))
+                .uri("http://venugopal:9091/")) // Make sure to use the correct URI
+            .build();
+    }
+}

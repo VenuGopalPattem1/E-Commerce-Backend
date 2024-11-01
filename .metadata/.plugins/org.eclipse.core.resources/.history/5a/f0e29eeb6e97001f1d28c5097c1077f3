@@ -1,0 +1,31 @@
+package com.nt.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.nt.repo.IUserMngRepo;
+
+@Service
+public class AuthService {
+	
+	@Autowired
+	private IUserMngRepo repo;
+	
+	@Autowired
+	private JwtUtils utils;
+	
+//	public String saveUser(UserCredential credential) {
+//        credential.setPassword(passwordEncoder.encode(credential.getPassword()));
+//        repository.save(credential);
+//        return "user added to the system";
+//    }
+
+    public String generateToken(String username) {
+        return utils.generateToken(username);
+    }
+
+    public void validateToken(String token) {
+    	utils.validateToken(token);
+    }
+
+}

@@ -1,0 +1,6 @@
+package com.nt.dto;
+
+public class Snippet {
+	    private Long id;
+}
+

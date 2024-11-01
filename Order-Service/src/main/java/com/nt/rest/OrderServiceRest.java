@@ -1,0 +1,46 @@
+package com.nt.rest;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.nt.dto.OrderDTO;
+import com.nt.service.IOrderService;
+
+@RestController
+@RequestMapping("/order")
+@CrossOrigin
+public class OrderServiceRest {
+	
+	@Autowired
+	private IOrderService orderSer;
+	
+	@PostMapping("/save")
+	public ResponseEntity<?> saveOrder(@RequestBody OrderDTO order){
+		String msg=orderSer.saveOrder(order);
+		return new ResponseEntity<String>(msg,HttpStatus.OK);
+	}
+	
+	@GetMapping("/get/{id}")
+	public  ResponseEntity<OrderDTO> getMethodName(@PathVariable Long id) {
+		OrderDTO order = orderSer.getOrderById(id);
+		return new ResponseEntity<OrderDTO>(order, HttpStatus.OK);
+	}
+	
+	
+	@GetMapping("/find/{email}")
+	public ResponseEntity<?> getOrderByEmail(@PathVariable String email){
+		List<OrderDTO> list = orderSer.getOrderByUser(email);
+		return new ResponseEntity<List<OrderDTO>>(list, HttpStatus.OK);
+	}
+
+}

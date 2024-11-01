@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="SmartImportWizard">
+		<item key="SmartImportRootWizardPage.STORE_HIDE_ALREADY_OPEN" value="false"/>
+		<item key="SmartImportRootWizardPage.STORE_CLOSE_IMPORTED" value="false"/>
+		<item key="SmartImportRootWizardPage.STORE_NESTED_PROJECTS" value="true"/>
+		<item key="SmartImportRootWizardPage.STORE_CONFIGURE_NATURES" value="true"/>
+		<list key="org.eclipse.ui.internal.wizards.datatransfer.SmartImportRootWizardPage.knownSources">
+			<item value="D:\E-Commerce\Backend\Customer-Service"/>
+			<item value="D:\E-Commerce\Backend\UserManagementApp"/>
+			<item value="D:\E-Commerce\Backend\JR-EurekaServer"/>
+			<item value="D:\E-Commerce\Backend\JR-ApiGateWay"/>
+			<item value="D:\E-Commerce\Backend\JR-AdminServer"/>
+			<item value="D:\E-Commerce\Backend\JR-ConfigServer"/>
+			<item value="C:\Users\venuv\git\PolicyPal-Insurance-Management-Platform-Backend-local\JR-EurekaServer"/>
+			<item value="C:\Users\venuv\git\PolicyPal-Insurance-Management-Platform-Backend-local\JR-ConfigServer"/>
+			<item value="C:\Users\venuv\git\PolicyPal-Insurance-Management-Platform-Backend-local\JR-ApiGateWay"/>
+			<item value="C:\Users\venuv\git\PolicyPal-Insurance-Management-Platform-Backend-local\JR-AdminServer"/>
+			<item value="C:\Users\venuv\JRTP\UserManagementApp"/>
+		</list>
+	</section>
+</section>

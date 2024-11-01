@@ -1,0 +1,50 @@
+package com.nt.filter;
+
+import org.springframework.cloud.gateway.filter.GatewayFilter;
+import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+@Component
+public class RequestFilter extends AbstractGatewayFilterFactory<RequestFilter.Config> {
+
+    public RequestFilter() {
+        super(Config.class);
+    }
+
+    @Override
+    public GatewayFilter apply(Config config) {
+        return (exchange, chain) -> {
+            // Check if the request is an OPTIONS request for CORS pre-flight
+            if (exchange.getRequest().getMethod().name().equals("OPTIONS")) {
+                // Create a response with the appropriate CORS headers
+                ServerWebExchange mutatedExchange = exchange.mutate()
+                    .response(response -> {
+                        response.getHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
+                        response.getHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET, POST, PUT, DELETE, OPTIONS");
+                        response.getHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Authorization, Content-Type, X-Requested-With");
+                        response.getHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+                    })
+                    .build();
+                mutatedExchange.getResponse().setStatusCode(org.springframework.http.HttpStatus.OK);
+                return mutatedExchange.getResponse().setComplete(); // Complete the response for pre-flight request
+            }
+
+            // For all other requests, add CORS headers and continue the filter chain
+            return chain.filter(exchange.mutate()
+                .response(response -> {
+                    response.getHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
+                    response.getHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET, POST, PUT, DELETE, OPTIONS");
+                    response.getHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Authorization, Content-Type, X-Requested-With");
+                    response.getHeaders().add(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+                })
+                .build());
+        };
+    }
+
+    public static class Config {
+        // Configuration properties can be added here if needed
+    }
+}

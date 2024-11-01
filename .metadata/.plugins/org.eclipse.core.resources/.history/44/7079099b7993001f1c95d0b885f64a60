@@ -1,0 +1,11 @@
+package com.nt.repo;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import com.nt.entity.Product;
+@RepositoryRestResource(path = "product")
+public interface ProductRepo extends JpaRepository<Product, Long> {
+	public Product findByCategory(@Param("category") String category);
+}

@@ -1,0 +1,20 @@
+spring.application.name=Product-Service
+
+server.port=6060
+
+
+# spring.jpa.open-in-view=true
+ 
+spring.servlet.multipart.enabled=true
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
+
+management.endpoints.web.exposure.include=*
+
+
+app.upload.dir=D:/E-Commerce/assets
+app.additional.upload.dir=D:/ecommerce-react/public/assets
+
+
+
+spring.data.rest.base-path=/api

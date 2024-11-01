@@ -1,0 +1,106 @@
+package com.nt.service;
+
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.nt.dto.OrderDTO;
+import com.nt.dto.OrderItemsDTO;
+import com.nt.entity.Address;
+import com.nt.entity.Customer;
+import com.nt.entity.Order;
+import com.nt.entity.OrderItems;
+import com.nt.repo.CustomerRepo;
+import com.nt.repo.OrderItemsRepo;
+import com.nt.repo.OrderRepo;
+@Service
+public class OrderServiceImpl implements IOrderService {
+	
+	@Autowired
+	private OrderRepo orderRepo;
+	
+	@Autowired
+	private CustomerRepo customerRepo;
+	
+	@Autowired
+	private OrderItemsRepo orepo;
+
+	public String saveOrder(OrderDTO orderDTO) {
+	    // Step 1: Create the Order object
+	    Order newOrder = new Order();
+	    newOrder.setOrderTrackingId(generateOrderTrackingId());
+	    newOrder.setTotalQuantity(orderDTO.getTotalQuantity());
+	    newOrder.setTotalPrice(orderDTO.getTotalPrice());
+	    newOrder.setStatus("packing");
+	    newOrder.setDeliveryDate(LocalDate.now().plusDays(4));
+
+	    // Step 2: Create and save the Customer object
+	    Customer cust = new Customer();
+	    cust.setEmail(orderDTO.getCustomer().getEmail());
+	    cust.setName(orderDTO.getCustomer().getName());
+	    cust.setPassword(orderDTO.getCustomer().getPassword());
+	    cust.setPhno(orderDTO.getCustomer().getPhno());
+	    Customer savedCustomer = customerRepo.save(cust); // Save the customer
+	    newOrder.setCustomer(savedCustomer); // Associate saved customer
+
+	    // Step 3: Create and set the Address object
+	    Address address = new Address();
+	    address.setStreet(orderDTO.getAddress().getStreet());
+	    address.setCity(orderDTO.getAddress().getCity());
+	    address.setState(orderDTO.getAddress().getState());
+	    address.setZipCode(orderDTO.getAddress().getZipCode());
+//	    address.setCustomer(savedCustomer); // Associate the address with the customer
+
+	    // Associate the Address with the Order
+	    newOrder.setAddress(address);
+
+	    // Step 4: Create OrderItems and associate them with the Order
+	    Set<OrderItems> orderItems = new HashSet<>();
+	    for (OrderItemsDTO itemDTO : orderDTO.getOrderItems()) {
+	        OrderItems newItem = new OrderItems();
+	        newItem.setImageUrl(itemDTO.getImageUrl());
+	        newItem.setUnitPrice(itemDTO.getUnitPrice());
+	        newItem.setQuantity(itemDTO.getQuantity());
+	        newItem.setProductId(itemDTO.getProductId());
+
+	        // Set the parent Order reference for each OrderItem
+	        newItem.setOrder(newOrder);
+	        orderItems.add(newItem);
+	    }
+
+	    // Associate the OrderItems with the Order
+//	    newOrder.setOrderItems(orderItems);
+
+	    // Step 5: Save the Order object, which cascades and saves Address and OrderItems
+	    Order savedOrder = orderRepo.save(newOrder);
+
+	    // Return a confirmation message with the saved Order ID
+	    return "Order Details are saved with Id value " + savedOrder.getId();
+	}
+
+
+
+
+
+	@Override
+	public Order getOrderById(Long id) {
+	     Optional<Order> opt=	orderRepo.findById(id);
+	     if(opt.isPresent()) {
+	    	 Order ord=opt.get();
+	    	 return ord;
+	     }
+		throw new IllegalArgumentException("Order is Not fount with order id "+id) ;
+	}
+	
+	 private static String generateOrderTrackingId() {
+	        return UUID.randomUUID().toString().replace("-", "").substring(0, 15);
+	    }
+
+
+
+}

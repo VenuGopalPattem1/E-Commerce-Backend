@@ -1,0 +1,42 @@
+package com.nt.entity;
+
+import java.time.LocalDate;
+import java.util.Set;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import lombok.Data;
+
+@Data
+@Entity
+public class Order {
+	private Long id;
+	private String orderTrackingId;
+	private Integer totalQuantity;
+	private Integer totalPrice;
+	private String status;
+	@CreationTimestamp
+	private LocalDate creationTime;
+	@UpdateTimestamp
+	private LocalDate lastUpdated;
+	
+	@OneToOne
+	private Address adressId;
+	
+	@OneToMany(cascade = CascadeType.ALL,mappedBy = "order")
+	@JsonIgnore
+	private Set<OrderItems> orderItems;
+	
+	@ManyToOne
+	@JoinColumn(name = "customerId")
+	private Customer customer;
+}

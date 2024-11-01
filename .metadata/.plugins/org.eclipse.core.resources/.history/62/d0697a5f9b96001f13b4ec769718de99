@@ -1,0 +1,10 @@
+package com.nt.service;
+
+import java.util.List;
+
+import com.nt.dto.FormInputDTO;
+import com.nt.entity.Order;
+
+public interface IAdminService {
+	public List<Order> findAllOrders(FormInputDTO inputs);
+}

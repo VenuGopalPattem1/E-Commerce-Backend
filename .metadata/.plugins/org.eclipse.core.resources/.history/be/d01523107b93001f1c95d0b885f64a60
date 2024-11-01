@@ -1,0 +1,18 @@
+package com.nt.repo;
+
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.stereotype.Component;
+
+import com.nt.entity.Product;
+@Component
+@RepositoryRestResource(path = "product")
+public interface ProductRepo extends JpaRepository<Product, Long> {
+	
+    Page<Product> findByCategoryId(@Param("id") Long id, Pageable pageable);
+
+    Page<Product> findByNameContaining(@Param("name") String name, Pageable pageable);
+}

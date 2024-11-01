@@ -1,0 +1,5 @@
+package com.nt.utils;
+
+public class AuthService {
+
+}

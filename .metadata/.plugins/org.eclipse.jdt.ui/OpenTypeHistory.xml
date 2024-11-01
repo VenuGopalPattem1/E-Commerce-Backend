@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<typeInfoHistroy>
+    <typeInfo handle="=Product-Service/C:\/Users\/venuv\/.m2\/repository\/org\/springframework\/data\/spring-data-jpa\/3.3.5\/spring-data-jpa-3.3.5.jar=/maven.pomderived=/true=/=/maven.groupId=/org.springframework.data=/=/maven.artifactId=/spring-data-jpa=/=/maven.version=/3.3.5=/=/maven.scope=/compile=/=/maven.pomderived=/true=/&lt;org.springframework.data.jpa.repository(JpaRepository.class[JpaRepository" modifiers="1537" timestamp="1729915873864"/>
+    <typeInfo handle="=Order-Service/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.nt.service{IOrderService.java[IOrderService" modifiers="513" timestamp="1730183513742"/>
+    <typeInfo handle="=Order-Service/C:\/Users\/venuv\/.m2\/repository\/org\/mockito\/mockito-core\/5.11.0\/mockito-core-5.11.0.jar=/maven.pomderived=/true=/=/test=/true=/=/maven.groupId=/org.mockito=/=/maven.artifactId=/mockito-core=/=/maven.version=/5.11.0=/=/maven.scope=/test=/=/maven.pomderived=/true=/&lt;org.mockito.internal.verification.api(InOrderContext.class[InOrderContext" modifiers="1537" timestamp="1716515640184"/>
+    <typeInfo handle="=Order-Service/C:\/Users\/venuv\/.m2\/repository\/org\/mockito\/mockito-core\/5.11.0\/mockito-core-5.11.0.jar=/maven.pomderived=/true=/=/test=/true=/=/maven.groupId=/org.mockito=/=/maven.artifactId=/mockito-core=/=/maven.version=/5.11.0=/=/maven.scope=/test=/=/maven.pomderived=/true=/&lt;org.mockito(InOrder.class[InOrder" modifiers="1537" timestamp="1716515640184"/>
+    <typeInfo handle="=Admin-Service/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.nt.service{IAdminService.java[IAdminService" modifiers="513" timestamp="1730277953796"/>
+</typeInfoHistroy>

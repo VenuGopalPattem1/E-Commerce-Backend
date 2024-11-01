@@ -1,0 +1,99 @@
+package com.nt.service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.nt.dto.AddressDTO;
+import com.nt.dto.CustomerDTO;
+import com.nt.dto.FormInputDTO;
+import com.nt.dto.OrderDTO;
+import com.nt.dto.OrderItemsDTO;
+import com.nt.entity.Order;
+import com.nt.repo.OrderRepo;
+@Service
+public class AdminServiceImpl implements IAdminService {
+
+    @Autowired
+    private OrderRepo oRepo;
+
+    @Override
+    public List<OrderDTO> findAllOrders(FormInputDTO inputs) {
+        List<OrderDTO> matchingOrders = new ArrayList<>();
+        List<Order> orders = oRepo.findAll();
+
+        for (Order order : orders) {
+            if (matchesCriteria(order, inputs)) {
+                OrderDTO orderDto = mapToOrderDTO(order);
+                matchingOrders.add(orderDto);
+            }
+        }
+        return matchingOrders;
+    }
+
+    private boolean matchesCriteria(Order order, FormInputDTO inputs) {
+        // Apply filtering based on input criteria
+        if (StringUtils.hasLength(inputs.getEmail()) && !inputs.getEmail().equals(order.getCustomer().getEmail())) {
+            return false;
+        }
+        if (StringUtils.hasLength(inputs.getOrderTrackingId()) && !inputs.getOrderTrackingId().equals(order.getOrderTrackingId())) {
+            return false;
+        }
+        if (StringUtils.hasLength(inputs.getDeliveryDate())) {
+            try {
+                LocalDate deliveryDate = LocalDate.parse(inputs.getDeliveryDate());
+                if (!deliveryDate.equals(order.getDeliveryDate())) {
+                    return false;
+                }
+            } catch (Exception e) {
+                // Log and handle invalid date format, if needed
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private OrderDTO mapToOrderDTO(Order order) {
+        OrderDTO orderDto = new OrderDTO();
+        orderDto.setOrderTrackingId(order.getOrderTrackingId());
+        orderDto.setTotalQuantity(order.getTotalQuantity());
+        orderDto.setTotalPrice(order.getTotalPrice());
+        orderDto.setStatus(order.getStatus());
+        orderDto.setDeliveryDate(order.getDeliveryDate());
+
+        // Populate CustomerDTO
+        CustomerDTO customerDto = new CustomerDTO();
+        customerDto.setName(order.getCustomer().getName());
+        customerDto.setEmail(order.getCustomer().getEmail());
+        customerDto.setPassword(order.getCustomer().getPassword());  // Encrypt or mask if sensitive
+        customerDto.setPhno(order.getCustomer().getPhno());
+        orderDto.setCustomer(customerDto);
+
+        // Populate AddressDTO
+        AddressDTO addressDto = new AddressDTO();
+        addressDto.setStreet(order.getAddress().getStreet());
+        addressDto.setCity(order.getAddress().getCity());
+        addressDto.setState(order.getAddress().getState());
+        addressDto.setZipCode(order.getAddress().getZipCode());
+        orderDto.setAddress(addressDto);
+
+        // Populate OrderItemsDTO
+        Set<OrderItemsDTO> orderItemsDto = order.getOrderItems().stream().map(item -> {
+            OrderItemsDTO orderItemDto = new OrderItemsDTO();
+            orderItemDto.setImageUrl(item.getImageUrl());
+            orderItemDto.setUnitPrice(item.getUnitPrice());
+            orderItemDto.setQuantity(item.getQuantity());
+            orderItemDto.setProductId(item.getProductId());
+            return orderItemDto;
+        }).collect(Collectors.toSet());
+        orderDto.setOrderItems(orderItemsDto);
+
+        return orderDto;
+    }
+}

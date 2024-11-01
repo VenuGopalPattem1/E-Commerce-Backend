@@ -1,0 +1,11 @@
+package com.nt.dto;
+
+import lombok.Data;
+
+@Data
+public class FormInputDTO {
+	private String email;
+	private String name;
+	private String deliveryDate;
+	private String orderTrackingId;
+}

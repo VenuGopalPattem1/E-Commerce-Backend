@@ -1,0 +1,119 @@
+package com.nt.service;
+
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.nt.dto.CustomerDTO;
+import com.nt.dto.OrderDTO;
+import com.nt.dto.OrderItemsDTO;
+import com.nt.entity.Address;
+import com.nt.entity.Customer;
+import com.nt.entity.Order;
+import com.nt.entity.OrderItems;
+import com.nt.repo.CustomerRepo;
+import com.nt.repo.OrderItemsRepo;
+import com.nt.repo.OrderRepo;
+@Service
+public class OrderServiceImpl implements IOrderService {
+	
+	@Autowired
+	private OrderRepo orderRepo;
+	
+	@Autowired
+	private CustomerRepo customerRepo;
+
+	
+	@Autowired
+	private OrderItemsRepo orderItemsRepo;
+
+	public String saveOrder(OrderDTO orderDTO) {
+	    // Step 1: Persist Customer Entity Separately
+	    Customer cust = new Customer();
+	    cust.setEmail(orderDTO.getCustomer().getEmail());
+	    cust.setName(orderDTO.getCustomer().getName());
+	    cust.setPassword(orderDTO.getCustomer().getPassword());
+	    cust.setPhno(orderDTO.getCustomer().getPhno());
+	    Customer savedCustomer = customerRepo.save(cust);
+
+	    // Step 2: Initialize and Save Order Without OrderItems
+	    Order newOrder = new Order();
+	    newOrder.setOrderTrackingId(generateOrderTrackingId());
+	    newOrder.setTotalQuantity(orderDTO.getTotalQuantity());
+	    newOrder.setTotalPrice(orderDTO.getTotalPrice());
+	    newOrder.setStatus("packing");
+	    newOrder.setDeliveryDate(LocalDate.now().plusDays(4));
+	    newOrder.setCustomer(savedCustomer);
+
+	    Address address = new Address();
+	    address.setStreet(orderDTO.getAddress().getStreet());
+	    address.setCity(orderDTO.getAddress().getCity());
+	    address.setState(orderDTO.getAddress().getState());
+	    address.setZipCode(orderDTO.getAddress().getZipCode());
+	    address.setCustomer(savedCustomer);
+	    newOrder.setAddress(address);
+
+	    Order savedOrder = orderRepo.save(newOrder); // Save Order without items
+
+	    // Step 3: Create OrderItems and associate them after Order is saved
+	    Set<OrderItems> orderItems = new HashSet<>();
+	    for (OrderItemsDTO itemDTO : orderDTO.getOrderItems()) {
+	        OrderItems newItem = new OrderItems();
+	        newItem.setImageUrl(itemDTO.getImageUrl());
+	        newItem.setUnitPrice(itemDTO.getUnitPrice());
+	        newItem.setQuantity(itemDTO.getQuantity());
+	        newItem.setProductId(itemDTO.getProductId());
+
+	        // Now associate each item with the saved order
+	        newItem.setOrder(savedOrder);  // Set reference to already saved order
+	        orderItems.add(newItem);
+	    }
+
+	    orderItemsRepo.saveAll(orderItems); // Save all OrderItems with references to Order
+
+	    // Optionally, associate items with order if needed for further use
+//	    savedOrder.setOrderItems(orderItems);
+	    orderRepo.save(savedOrder); // Update order to include order items if required
+
+	    return "Order Details are saved with Id value " + savedOrder.getId();
+	}
+
+
+
+	@Override
+	public Order getOrderById(Long id) {
+	     Optional<Order> opt=	orderRepo.findById(id);
+	     if(opt.isPresent()) {
+	    	 Order ord=opt.get();
+	    	 OrderDTO Odto = new OrderDTO();
+	    	 BeanUtils.copyProperties(ord, Odto);
+	    	 Optional<Customer> customer =  customerRepo.findById(ord.getCustomer().getId());
+	    	 if(customer.isPresent()) {
+	    		 Customer cust = customer.get();
+	    		 CustomerDTO cDto = new CustomerDTO();
+	    		 BeanUtils.copyProperties(cust, cDto);
+	    		 Odto.setCustomer(cDto);
+	    	 }
+	    	 
+	    	 List<OrderItems> items =  orderItemsRepo.findByOrderId(id);
+	    	 if(!items.isEmpty()) {
+	    		 
+	    	 }
+	     }
+		throw new IllegalArgumentException("Order is Not fount with order id "+id) ;
+	}
+	
+	 private static String generateOrderTrackingId() {
+	        return UUID.randomUUID().toString().replace("-", "").substring(0, 15);
+	    }
+
+
+
+}

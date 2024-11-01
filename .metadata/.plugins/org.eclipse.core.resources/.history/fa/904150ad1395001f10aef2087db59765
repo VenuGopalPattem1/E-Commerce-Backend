@@ -1,0 +1,66 @@
+package com.nt.entity;
+
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.Data;
+
+@Entity
+@Data
+@Table(name = "orders")
+public class Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String orderTrackingId;
+    private Integer totalQuantity;
+    private Integer totalPrice;
+    private String status;
+    private LocalDate deliveryDate;  // Fix typo "deliveyDate" to "deliveryDate"
+    
+    @CreationTimestamp
+    private LocalDate creationTime;
+    
+    @UpdateTimestamp
+    private LocalDate lastUpdated;
+    
+    @OneToOne(cascade = CascadeType.ALL)
+    private Address address;  // Fix typo "adress" to "address"
+    
+    @OneToMany( mappedBy = "order",cascade = CascadeType.ALL)
+    private Set<OrderItems> orderItems= new HashSet<>();
+
+    // Many orders can belong to one customer
+    @ManyToOne
+    @JoinColumn(name = "customerId", nullable = false)
+    private Customer customer;
+    
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, orderTrackingId); // Use fields that uniquely identify the object
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Order)) return false;
+        Order order = (Order) o;
+        return Objects.equals(id, order.id);
+    }
+}

@@ -1,0 +1,16 @@
+package com.nt.repo;
+
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import com.nt.entity.Product;
+@RepositoryRestResource(path = "product")
+public interface ProductRepo extends JpaRepository<Product, Long> {
+	
+	public Optional<Product> findByCategoryId(@Param("id") Integer id);
+	
+	public Optional<Product> findByName(@Param("name") String name);
+}

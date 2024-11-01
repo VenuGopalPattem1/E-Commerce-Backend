@@ -1,0 +1,18 @@
+package com.nt.dto;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import lombok.Data;
+
+@Data
+public class ProductInputs {
+
+	   private String name;
+	    private String description;
+	    private String title;
+	    private Integer unitsPrice;
+	    private Integer unitsStock;
+//	    private String active;
+	    private MultipartFile imageFile; // File field for the image
+	    private String categoryName;
+}

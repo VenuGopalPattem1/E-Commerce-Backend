@@ -1,0 +1,21 @@
+package com.nt.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.nt.dto.FormInputDTO;
+import com.nt.entity.Order;
+import com.nt.repo.OrderRepo;
+
+public class AdminServiceImpl implements IAdminService {
+	
+	@Autowired
+	private OrderRepo oRepo;
+
+	@Override
+	public List<Order> findAllOrders(FormInputDTO inputs) {
+		return oRepo.findAll();
+	}
+	
+}

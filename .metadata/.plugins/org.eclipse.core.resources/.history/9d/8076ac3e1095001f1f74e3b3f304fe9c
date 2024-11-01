@@ -1,0 +1,19 @@
+package com.nt.dto;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import lombok.Data;
+
+@Data
+public class OrderDTO {
+    private Long id;
+    private String orderTrackingId;
+    private Integer totalQuantity;
+    private Integer totalPrice;
+    private String status;
+    private LocalDate deliveryDate;
+    private List<OrderItemsDTO> orderItems; // Use DTO for OrderItems
+    private CustomerDTO customer; // Use DTO for Customer
+    private AddressDTO address; // Use DTO for Address
+}

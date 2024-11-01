@@ -1,0 +1,5 @@
+package com.nt.repo;
+
+public interface ProduceServiceRepo {
+
+}

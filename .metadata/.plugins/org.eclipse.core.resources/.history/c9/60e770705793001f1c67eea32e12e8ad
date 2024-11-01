@@ -1,0 +1,10 @@
+package com.nt.repo;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import comt.nt.entity.Product;
+@RepositoryRestResource(path = "product")
+public interface ProduceRepo extends JpaRepository<Product, Long> {
+
+}
